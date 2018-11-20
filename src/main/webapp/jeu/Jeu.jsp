@@ -16,9 +16,9 @@
         <hr>
         <h2>${joueurs} joueur(s) connecté(s)</h2>
         <hr>
-        <h1>Hello ${customer}, Devine mon nombre</h1>
+        <h1>Hello ${playerName}, Devine mon nombre</h1>
         <p>Essai n°${essai}</p>
-        <p>${tentative}</p>
+        <p>${nombreAleatoire}</p>
         <form method="POST">
             <p>Devine un nombre entre ${mini} et ${maxi}</p>
             <p>Trop ${hauteur}</p>
@@ -26,6 +26,7 @@
             Ta proposition :
             <input name="nombre" type="number">
         </label>
+            <input type="hidden" name="action" value="ADD">
             <input name="deviner" value="Deviner" type="SUBMIT">
         </form>
             </hr>

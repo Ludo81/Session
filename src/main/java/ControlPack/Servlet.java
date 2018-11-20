@@ -38,40 +38,78 @@ public class Servlet extends HttpServlet {
             int mini = 0;
         
             HttpSession session = ((HttpServletRequest)request).getSession(true);
-            String customer = (String) session.getAttribute("customer");
             
+            String playerName = (String) session.getAttribute("playerName");
             
+            int nombreAleatoire;
+            
+            int essai;
+            
+            String jspView;
+            
+                
                            
-                String playerName = request.getParameter("playerName");
-                customer = playerName;
+                //playerName = request.getParameter("playerName");
+                //customer = playerName;
 
                 if (playerName == null){ // Pas connecté, on va vers la page de login 
-                    request.getRequestDispatcher("Login.jsp").forward(request, response); 
+                    jspView = "Login.jsp";
+                    String action = request.getParameter("action2");
+                    if ("CONNECT".equals(action)) {
+                            playerName = request.getParameter("playerName");
+
+
+
+                            System.out.println(playerName+"if");
+
+                            session.setAttribute("playerName",playerName);
+
+                            nombreAleatoire = mini + (int)(Math.random() * ((maxi - mini) + 1));  //Initialisation du nombre aléatoire
+                            session.setAttribute("nombreAleatoire",nombreAleatoire);
+
+                            essai = 0;                              //Initialisation de essai
+                            session.setAttribute("essai",essai);
+                        }
                 }
 
                 else{ // connecté, on continue le traitement de la requête
+                    System.out.println(playerName+"else");
+                    jspView = "Jeu.jsp";
+                    
                     String bas = "bas";
                     String haut = "haut";
 
-                    request.getSession(true).setAttribute("customer",playerName);
-                    request.getSession(true).setAttribute("mini",mini);
-                    request.getSession(true).setAttribute("maxi",maxi);
+                    getServletContext().setAttribute("mini",mini);
+                    getServletContext().setAttribute("maxi",maxi);
 
-                    int nombreAleatoire = mini + (int)(Math.random() * ((maxi - mini) + 1));
                     
-                    request.getSession(true).setAttribute("tentative",nombreAleatoire);
+                    nombreAleatoire = (int) session.getAttribute("nombreAleatoire");
+                                        
+                    String action = request.getParameter("action");
+                    
+                    if ("ADD".equals(action)) {                     //Si on clique sur deviner
+                        
+                        int proposition = Integer.parseInt(request.getParameter("nombre"));
+                        
+                        System.out.println("nobmre"+proposition);
+                        
+                        essai = (int) session.getAttribute("essai");    //Augmentation de essai
+                        essai += 1;
+                        getServletContext().setAttribute("essai",essai);
+                        session.setAttribute("essai",essai);
 
-                    int proposition = request.getIntHeader("nombre");
+                        if (proposition < nombreAleatoire) getServletContext().setAttribute("hauteur",bas);
 
-                    if (proposition < nombreAleatoire) request.getSession(true).setAttribute("hauteur",bas);
+                        else if (proposition > nombreAleatoire) getServletContext().setAttribute("hauteur",haut);
 
-                    else if (proposition > nombreAleatoire) request.getSession(true).setAttribute("hauteur",haut);
+                        else request.getRequestDispatcher("jeu/Victoire.jsp").forward(request, response); 
+                    }
+                        
 
-                    else request.getRequestDispatcher("Victoire.jsp").forward(request, response); 
 
-                    request.getRequestDispatcher("jeu/Jeu.jsp").forward(request, response); 
+                    
                 }
-           
+            request.getRequestDispatcher("jeu/" + jspView).forward(request, response);
               
         }
     
